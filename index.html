@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rasmni Telegramga yuborish</title>
+    <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+    <button id="startBtn">📸 Rasmga olish</button>
+    <video id="video" width="300" height="250" autoplay></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <button id="sendBtn" style="display: none;">📤 Telegramga yuborish</button>
+
+    <script>
+        const startBtn = document.getElementById("startBtn");
+        const sendBtn = document.getElementById("sendBtn");
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        const BOT_TOKEN = "7607886976:AAFeeYopg0dPPNk4x_3Ldm4pYSZU-RiHLlU"; // O'zingizning bot tokeningizni kiriting
+        const CHAT_ID = "697727022"; // Telegram ID yoki guruh ID
+
+        // Kamera ishga tushirish
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                startBtn.style.display = "none";
+                sendBtn.style.display = "inline-block";
+            } catch (error) {
+                alert("Kamera ishga tushmadi: " + error);
+            }
+        }
+
+        // Rasm olish
+        function takePhoto() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            sendPhotoToTelegram();
+        }
+
+        // Telegramga rasmni yuborish
+        async function sendPhotoToTelegram() {
+            canvas.toBlob(async (blob) => {
+                const formData = new FormData();
+                formData.append("chat_id", CHAT_ID);
+                formData.append("photo", blob, "photo.jpg");
+
+                try {
+                    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const result = await response.json();
+                    console.log("Rasm yuborildi:", result);
+                    alert("📤 Rasm Telegramga yuborildi!");
+                } catch (error) {
+                    console.error("Xatolik:", error);
+                    alert("❌ Xatolik yuz berdi.");
+                }
+            }, "image/jpeg");
+        }
+
+        startBtn.addEventListener("click", startCamera);
+        sendBtn.addEventListener("click", takePhoto);
+    </script>
+</body>
+</html>
+
